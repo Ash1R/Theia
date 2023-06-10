@@ -4,7 +4,9 @@ import requests
 import csv 
 import json
 import time
+from flask_socketio import SocketIO, emit
 from os.path import exists
+import subprocess
 
 def csv_to_json(csvFilePath, jsonFilePath):
     jsonArray = []
@@ -36,8 +38,19 @@ def post_json(url, data):
     
     # Print the response content
     print(response.json())
-    
+
+def upload_file(url, file_path):
+    try:
+        with open(file_path, 'rb') as file:
+            response = requests.post(url, files={'file': file})
+            response.raise_for_status()  # Raise an exception for unsuccessful responses
+
+        print('File uploaded successfully.')
+    except requests.exceptions.RequestException as e:
+        print('Error:', e)
+
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 fields = ["user", "message"]
 
@@ -79,19 +92,14 @@ def receive_data():
     f = open("DataManager/Data/class" + classId +".csv",)
     data = json.load(f)
 
-@app.route('/upload', methods=['POST'])
-def upload():
-    if 'file' not in request.files:
-        return 'No file uploaded.', 400
+    # Example usage
+    file_path = 'DataManager/Data/class01.json'  # Path of the file you want to send
+    target_url = 'http://192.168.64.128/receive'  # URL of the receiving server
 
-    file = request.files['file']
+    url = 'http://<target-computer-ip>:<port>/receive'  # URL of the receiving server
+    file_path = 'DataManager/Data/class01.json'  # Path of the file you want to upload
 
-    if file.filename == '':
-        return 'No file selected.', 400
-
-    file.save(file.filename)
-    return 'File saved successfully.', 200
-    
+upload_file(url, file_path)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    socketio.run(app,host='0.0.0.0', port=5000, debug=True)
