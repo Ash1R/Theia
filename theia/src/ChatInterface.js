@@ -107,7 +107,7 @@ function ChatInterface() {
   return (
     <Container text>
       <Header as="h1"  style={{ textAlign: "center", marginTop: "40px", fontSize: 75}}>
-        Chatroom {}
+        Chat Room {}
       </Header>
       <div
         ref={messageContainerRef}
