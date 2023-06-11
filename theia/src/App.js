@@ -5,6 +5,8 @@ import Home from "./Home";
 import Selection from "./Selection";
 import "semantic-ui-css/semantic.min.css";
 import ChatInterface from "./ChatInterface";
+
+import InteractiveCalendar from "./Calendar";
 import {
   getFirestore,
   setDoc,
@@ -21,6 +23,7 @@ const App = () => {
         <Route path="/" element={<Home />}></Route>
         <Route path="/select" element={<Selection />}></Route>
         <Route path="/chat" element={<ChatInterface />}></Route>
+        <Route path="calendar" element={<InteractiveCalendar />}></Route>
       </Routes>
     </BrowserRouter>
   );
