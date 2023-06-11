@@ -42,11 +42,7 @@ function ChatInterface() {
       setID(ident);
       const db = getFirestore();
 
-      const assq = query(
-        collection(db, "chatrooms"),
-
-        where("id", "==", ident)
-      );
+      const assq = query(collection(db, "chatrooms"), where("id", "==", ident));
 
       const assSnapshot = await getDocs(assq);
 
@@ -106,16 +102,24 @@ function ChatInterface() {
 
   return (
     <Container text>
-      <Header as="h1"  style={{ textAlign: "center", marginTop: "40px", fontSize: 75}}>
-        Chatroom {}
+      <Header
+        as="h1"
+        style={{ textAlign: "center", marginTop: "40px", fontSize: 75 }}
+      >
+        {id}
       </Header>
       <div
         ref={messageContainerRef}
-        style={{ width: "1500px", height: "800px", overflowY: "auto",  textAlign: "left"}}
+        style={{
+          width: "1500px",
+          height: "800px",
+          overflowY: "auto",
+          textAlign: "left",
+        }}
       >
         <Comment.Group>
           {messages.map((message, index) => (
-            <Comment key={index} style = {{ width: "1000px", fontSize: 25}}>
+            <Comment key={index} style={{ width: "1000px", fontSize: 25 }}>
               <Comment.Content>
                 <Comment.Text> {message}</Comment.Text>
               </Comment.Content>

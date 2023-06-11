@@ -79,12 +79,14 @@ const Selection = () => {
       { chat: assList[0]["chat"], id: assList[0]["id"], users: nusers },
       { merge: true }
     );
+    setCode("");
   }
 
   async function newRoom() {
     const db = getFirestore();
     const goodRef = doc(db, "chatrooms", name);
     setDoc(goodRef, { chat: [], id: name, users: [use] }, { merge: true });
+    setName("");
   }
   return (
     <Container>
@@ -99,15 +101,6 @@ const Selection = () => {
           textAlign="center"
           style={{ margin: "10px" }}
         >
-          <Link to="/calendar">
-            <Card color="red">
-              <Card.Content>
-                <Card.Header>Calendar</Card.Header>
-                <Card.Description></Card.Description>
-              </Card.Content>
-            </Card>
-          </Link>
-
           {rooms.map((e) => {
             return (
               <Link to={"/chat?user=" + use + "&chatid=" + e["id"]}>
