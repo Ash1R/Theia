@@ -97,8 +97,13 @@ def append_to_json_file(filepath, data):
 
 
 # Initialize the Firebase Admin SDK
-# cred = credentials.Certificate("path/to/serviceAccountKey.json")
-# firebase_admin.initialize_app(cred)
+cred = credentials.Certificate("DataManager/serviceAccountKey.json")
+firebase_admin.initialize_app(cred, {
+    'storageBucket': 'theia-b3690.appspot.com'
+})
+
+# Get a reference to the storage bucket
+bucket = storage.bucket()
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -111,63 +116,75 @@ message = ""
 @app.route('/receive', methods=['POST'])
 def receive_data():
     data = request.get_json()  # Extract the JSON data from the request
+    classId = data.get('class')
+    print(classId)
+    user = data.get('user')
+    print(user)
+    message = data.get('message')
+    print(message)
+    try:
+        user_message = request.json['message']
+        logging.info('Received message: ' + user_message)
+        if user_message.startswith("/gpt"):
+            # Extract the question for GPT
+            gpt_question = user_message[5:]  # Skip the "/gpt " part
+            response = generate_response(gpt_question)
+            # Append the question and response to the chat log
 
-    # Process the data and display it
-    if data:
-        # Assuming the JSON data has a key called 'message'
-        classId = data.get('class')
-        print(classId)
-        user = data.get('user')
-        print(user)
-        message = data.get('message')
-        print(message)
-        listToAppend = [user, message]
-        print(listToAppend)
-        if exists("DataManager/Data/class" + classId +".csv"):
-            w = csv.writer(open(r"DataManager/Data/class" + classId +".csv", 'a', newline='', encoding='UTF8'), dialect='excel')
-            w.writerow(listToAppend)
+            append_to_json_file("DataManager/Data/class" + classId +".csv", {"question": gpt_question, "response": response.json['message']})
+            # Specify the local file path and desired remote file name
+            local_file_path = "DataManager/Data/class" + classId +".csv"
+            remote_file_name = "class" + classId+".json"
+
+            blob = bucket.blob(remote_file_name)
+            blob.upload_from_filename(local_file_path)
+
+            print("File uploaded successfully.")
+            return response
         else:
-            with open(r"DataManager/Data/class" + classId +".csv", 'w', newline='', encoding='UTF8') as f:
-                # create the csv writer
-                writer = csv.writer(f)
-                writer.writerow(fields)
-                writer.writerow(listToAppend)
-            
-        csvFilePath = r"DataManager/Data/class" + classId +".csv"
-        jsonFilePath = r"DataManager/Data/class" + classId +".json"
+            # If it's not a /gpt command, just return a generic response
+            return jsonify({'message': "Command not recognized. Please start your command with '/gpt'."})
+    except:
+        # Process the data and display it
+        if data:
+            # Assuming the JSON data has a key called 'message'
+            classId = data.get('class')
+            print(classId)
+            user = data.get('user')
+            print(user)
+            message = data.get('message')
+            print(message)
+            listToAppend = [user, message]
+            print(listToAppend)
+            if exists("DataManager/Data/class" + classId +".csv"):
+                w = csv.writer(open(r"DataManager/Data/class" + classId +".csv", 'a', newline='', encoding='UTF8'), dialect='excel')
+                w.writerow(listToAppend)
+            else:
+                with open(r"DataManager/Data/class" + classId +".csv", 'w', newline='', encoding='UTF8') as f:
+                    # create the csv writer
+                    writer = csv.writer(f)
+                    writer.writerow(fields)
+                    writer.writerow(listToAppend)
 
-        csv_to_json(csvFilePath, jsonFilePath)
-        bucket = storage.bucket()
+            csvFilePath = r"DataManager/Data/class" + classId +".csv"
+            jsonFilePath = r"DataManager/Data/class" + classId +".json"
 
-        # Specify the local file path and desired remote file name
-        local_file_path = "DataManager/Data/class01.json"
-        remote_file_name = "files/file.txt"
+            csv_to_json(csvFilePath, jsonFilePath)
 
-        blob = bucket.blob(remote_file_name)
-        blob.upload_from_filename(local_file_path)
+            # Specify the local file path and desired remote file name
+            local_file_path = "DataManager/Data/class" + classId +".csv"
+            remote_file_name = "class" + classId+".json"
 
-        print("File uploaded successfully.")
-        return "Invalid data"
+            blob = bucket.blob(remote_file_name)
+            blob.upload_from_filename(local_file_path)
+
+            print("File uploaded successfully.")
+            return "Invalid data"
 
 @app.route('/')
 def index():
     return "Chat Interface"
 
-@app.route('/message', methods=['POST'])
-def handle_message():
-    user_message = request.json['message']
-    logging.info('Received message: ' + user_message)
-    if user_message.startswith("/gpt"):
-        # Extract the question for GPT
-        gpt_question = user_message[5:]  # Skip the "/gpt " part
-        response = generate_response(gpt_question)
-        # Append the question and response to the chat log
-
-        append_to_json_file("DataManager/Data/class01.json", {"question": gpt_question, "response": response.json['message']})
-        return response
-    else:
-        # If it's not a /gpt command, just return a generic response
-        return jsonify({'message': "Command not recognized. Please start your command with '/gpt'."})
 
 
 if __name__ == '__main__':
