@@ -111,11 +111,11 @@ function ChatInterface() {
       </Header>
       <div
         ref={messageContainerRef}
-        style={{ width: "3000px", height: "800px", overflowY: "auto",  textAlign: "left"}}
+        style={{ width: "1500px", height: "800px", overflowY: "auto",  textAlign: "left"}}
       >
         <Comment.Group>
           {messages.map((message, index) => (
-            <Comment key={index} style = {{fontSize: 25}}>
+            <Comment key={index} style = {{ width: "1000px", fontSize: 25}}>
               <Comment.Content>
                 <Comment.Text> {message}</Comment.Text>
               </Comment.Content>
