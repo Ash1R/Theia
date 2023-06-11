@@ -46,7 +46,7 @@ const Home = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </Form.Field>
-        <Link to={"/select?" + name}>
+        <Link to={"/select?user=" + name}>
           <Form.Field>
             {" "}
             <Button style={{ marginLeft: "40px", marginTop: "10px" }} massive>

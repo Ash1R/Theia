@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Form,
@@ -8,50 +8,137 @@ import {
   Divider,
 } from "semantic-ui-react";
 
+import {
+  getFirestore,
+  setDoc,
+  doc,
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy,
+} from "firebase/firestore";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 
 const Selection = () => {
   const [chatList, setChatList] = useState([]);
+  const [code, setCode] = useState("");
+  const [name, setName] = useState("");
+  const [rooms, setRooms] = useState([]);
+  const [use, setUse] = useState("");
+
+  useEffect(() => {
+    async function does() {
+      const db = getFirestore();
+      const queryParameters = new URLSearchParams(window.location.search);
+
+      const user = queryParameters.get("user");
+      setUse(user);
+
+      const assq = query(
+        collection(db, "chatrooms"),
+        where("users", "array-contains", user)
+      );
+
+      const assSnapshot = await getDocs(assq);
+      var assList = [];
+      assSnapshot.forEach((match) => {
+        assList.push(match.data());
+      });
+      setRooms(assList);
+    }
+    does();
+  }, []);
+
+  async function add() {
+    const db = getFirestore();
+    const assq = query(
+      collection(db, "chatrooms"),
+
+      where("id", "==", code)
+    );
+
+    const assSnapshot = await getDocs(assq);
+
+    var assList = [];
+    assSnapshot.forEach((match) => {
+      assList.push(match.data());
+    });
+
+    console.log(assList);
+    var nusers = assList[0]["users"];
+    const queryParameters = new URLSearchParams(window.location.search);
+    const user = queryParameters.get("user");
+    nusers.push(user);
+
+    const goodRef = doc(db, "chatrooms", assList[0]["id"]);
+
+    setDoc(
+      goodRef,
+      { chat: assList[0]["chat"], id: assList[0]["id"], users: nusers },
+      { merge: true }
+    );
+  }
   return (
     <Container>
       <Header style={{ textAlign: "center", marginBottom: "30px" }} as="h1">
         Choose Class Chat or Calendar
       </Header>
-      <Card.Group
-        centered
-        stackable
-        textAlign="center"
-        style={{ margin: "10px" }}
-      >
-        <Link to="/calendar">
-          <Card color="red">
-            <Card.Content>
-              <Card.Header>Calendar</Card.Header>
-              <Card.Description></Card.Description>
-            </Card.Content>
-          </Card>
-        </Link>
-        <Link to="/chat">
-          <Card color="red">
-            <Card.Content>
-              <Card.Header>AI Tutor</Card.Header>
-              <Card.Description></Card.Description>
-            </Card.Content>
-          </Card>
-        </Link>
-      </Card.Group>
-      {chatList.map((e) => {
-        return (
-          <Link to={"/chat?" + {}}>
+      <Container>
+        <Card.Group
+          one
+          centered
+          stackable
+          textAlign="center"
+          style={{ margin: "10px" }}
+        >
+          <Link to="/calendar">
             <Card color="red">
               <Card.Content>
-                <Card.Header>Example Chat</Card.Header>
+                <Card.Header>Calendar</Card.Header>
                 <Card.Description></Card.Description>
               </Card.Content>
             </Card>
           </Link>
-        );
-      })}
+
+          {rooms.map((e) => {
+            return (
+              <Link to={"/chat?user=" + use + "&chatid=" + e["id"]}>
+                <Card color="red">
+                  <Card.Content>
+                    <Card.Header>{e["id"]}</Card.Header>
+                    <Card.Description>Owner: {e["users"][0]}</Card.Description>
+                  </Card.Content>
+                </Card>
+              </Link>
+            );
+          })}
+
+          <Container style={{ marginTop: "50px", textAlign: "center" }}>
+            <Container>
+              {" "}
+              <label>add yourself to a room </label>
+              <input
+                onChange={(e) => setCode(e.target.value)}
+                value={code}
+              ></input>
+              <Button onClick={add} style={{ marginLeft: "20px" }}>
+                add
+              </Button>
+            </Container>
+
+            <Container style={{ marginTop: "20px" }}>
+              {" "}
+              <label>create a room </label>
+              <input
+                onChange={(e) => setName(e.target.value)}
+                value={name}
+              ></input>
+              <Button style={{ marginLeft: "20px" }}>add</Button>
+            </Container>
+          </Container>
+        </Card.Group>
+      </Container>
     </Container>
   );
 };
