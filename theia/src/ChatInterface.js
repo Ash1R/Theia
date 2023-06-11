@@ -39,18 +39,18 @@ function ChatInterface() {
 
   return (
     <Container text>
-      <Header as="h1" style={{ textAlign: "center", marginTop: "30px" }}>
+      <Header as="h1"  style={{ textAlign: "center", marginTop: "40px", fontSize: 75}}>
         Chatroom {}
       </Header>
       <div
         ref={messageContainerRef}
-        style={{ height: "400px", overflowY: "auto" }}
+        style={{ height: "800px", overflowY: "auto" }}
       >
         <Comment.Group>
           {messages.map((message, index) => (
-            <Comment key={index}>
+            <Comment key={index} style = {{fontSize: 40}}>
               <Comment.Content>
-                <Comment.Text>{message}</Comment.Text>
+                <Comment.Text> {message}</Comment.Text>
               </Comment.Content>
             </Comment>
           ))}

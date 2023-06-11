@@ -34,12 +34,13 @@ const Selection = () => {
         <Link to="/chat">
           <Card color="red">
             <Card.Content>
-              <Card.Header>AI Tutor</Card.Header>
+              <Card.Header>AI Chat Room Tutor</Card.Header>
               <Card.Description></Card.Description>
             </Card.Content>
           </Card>
         </Link>
       </Card.Group>
+      
       {chatList.map((e) => {
         return (
           <Link to={"/chat?" + {}}>
