@@ -117,7 +117,7 @@ const Selection = () => {
           <Container style={{ marginTop: "50px", textAlign: "center" }}>
             <Container>
               {" "}
-              <label>add yourself to a room </label>
+              <label>Add Yourself To A Room </label>
               <input
                 onChange={(e) => setCode(e.target.value)}
                 value={code}
@@ -129,7 +129,7 @@ const Selection = () => {
 
             <Container style={{ marginTop: "20px" }}>
               {" "}
-              <label>create a room </label>
+              <label>Create A Room </label>
               <input
                 onChange={(e) => setName(e.target.value)}
                 value={name}
