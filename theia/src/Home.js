@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import { Container, Form, Button, Header } from "semantic-ui-react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import { getFirestore, doc, setDoc } from "firebase/firestore";
 
 const Home = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [created, setshowCreated] = useState(true);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Add your login logic here
+  const handleSubmit = () => {
+    setshowCreated(false);
+    const db = getFirestore();
+    const adocRef = doc(db, "cred", String(name) + "_" + String(password));
+    setDoc(adocRef, { name, password }, { merge: true });
   };
 
   return (
@@ -43,7 +46,7 @@ const Home = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </Form.Field>
-        <Link to="/select">
+        <Link to={"/select?" + name}>
           <Form.Field>
             {" "}
             <Button style={{ marginLeft: "40px", marginTop: "10px" }} massive>
@@ -55,7 +58,7 @@ const Home = () => {
         <Form.Field>
           {" "}
           <Button
-            onClick={() => setshowCreated(false)}
+            onClick={handleSubmit}
             style={{ marginLeft: "40px", marginTop: "10px" }}
             massive
           >

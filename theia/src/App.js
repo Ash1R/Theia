@@ -5,7 +5,15 @@ import Home from "./Home";
 import Selection from "./Selection";
 import "semantic-ui-css/semantic.min.css";
 import ChatInterface from "./ChatInterface";
-
+import {
+  getFirestore,
+  setDoc,
+  doc,
+  getDocs,
+  collection,
+  query,
+  where,
+} from "firebase/firestore";
 const App = () => {
   return (
     <BrowserRouter>

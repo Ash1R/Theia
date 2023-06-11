@@ -16,13 +16,6 @@ function ChatInterface() {
     });
     return response.json();
   }
-  useEffect(() => {
-    const controller = new AbortController();
-    var a = get_url(
-      controller,
-      "http://192.168.65.158:5000/upload/Datamanager/Data/class/class01.json"
-    ).then((data) => console.log(data));
-  });
 
   useEffect(() => {
     scrollToBottom();
@@ -46,7 +39,9 @@ function ChatInterface() {
 
   return (
     <Container text>
-      <Header>Chatroom {}</Header>
+      <Header as="h1" style={{ textAlign: "center", marginTop: "30px" }}>
+        Chatroom {}
+      </Header>
       <div
         ref={messageContainerRef}
         style={{ height: "400px", overflowY: "auto" }}
