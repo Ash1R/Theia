@@ -46,6 +46,7 @@ const Selection = () => {
         assList.push(match.data());
       });
       setRooms(assList);
+      console.log(rooms);
     }
     does();
   }, []);
@@ -78,6 +79,12 @@ const Selection = () => {
       { chat: assList[0]["chat"], id: assList[0]["id"], users: nusers },
       { merge: true }
     );
+  }
+
+  async function newRoom() {
+    const db = getFirestore();
+    const goodRef = doc(db, "chatrooms", name);
+    setDoc(goodRef, { chat: [], id: name, users: [use] }, { merge: true });
   }
   return (
     <Container>
@@ -134,7 +141,9 @@ const Selection = () => {
                 onChange={(e) => setName(e.target.value)}
                 value={name}
               ></input>
-              <Button style={{ marginLeft: "20px" }}>add</Button>
+              <Button onClick={newRoom} style={{ marginLeft: "20px" }}>
+                add
+              </Button>
             </Container>
           </Container>
         </Card.Group>
