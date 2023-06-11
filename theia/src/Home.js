@@ -50,7 +50,7 @@ const Home = () => {
           <Form.Field>
             {" "}
             <Button style={{ marginLeft: "40px", marginTop: "10px" }} massive>
-              login
+              Login
             </Button>
           </Form.Field>
         </Link>
@@ -62,7 +62,7 @@ const Home = () => {
             style={{ marginLeft: "40px", marginTop: "10px" }}
             massive
           >
-            make account w/ these
+            Register
           </Button>
         </Form.Field>
         <Form.Field style={{ marginLeft: "40px", marginTop: "10px" }}>
